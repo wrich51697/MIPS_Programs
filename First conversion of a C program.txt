@@ -1,0 +1,44 @@
+.data
+format:     .asciiz "the answer is %d\n"
+x:          .word 0
+y:          .word 0
+z:          .word 0
+
+.text
+.globl main
+
+addit:
+    # Function prologue
+    push    $ra
+    # Function body
+    lw      $t0, 0($a0)     # Load x from memory
+    lw      $t1, 0($a1)     # Load y from memory
+    add     $v0, $t0, $t1   # Add x and y
+    # Function epilogue
+    pop     $ra
+    jr      $ra
+
+main:
+    # Initialize variables
+    li      $t0, 10          # x = 10
+    li      $t1, 5           # y = 5
+
+    # Call the addit function
+    move    $a0, $t0         # Pass x as the first argument
+    move    $a1, $t1         # Pass y as the second argument
+    jal     addit            # Call addit function
+    move    $t2, $v0         # Store the result in $t2 (z)
+
+    # Prepare for printf
+    li      $v0, 4           # Load the syscall code for printing a string
+    la      $a0, format      # Load the address of the format string
+    syscall
+
+    # Print the result
+    li      $v0, 1           # Load the syscall code for printing an integer
+    move    $a0, $t2         # Load the value of z
+    syscall
+
+    # Exit the program
+    li      $v0, 10          # Load the syscall code for exit
+    syscall
